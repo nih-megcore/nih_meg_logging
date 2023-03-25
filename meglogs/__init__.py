@@ -1,3 +1,3 @@
-import logging
-import meglog_parsing
-from DEFAULTS import *
+from .DEFAULTS import *
+from . import logging
+from . import meglog_parsing
