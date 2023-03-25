@@ -12,16 +12,10 @@ import os, os.path as op
 import copy
 
 PROJECT = 'ENIGMA_MEG'
-# /data/EnigmaMeg/BIDS/NIH_hvmeg_20220131
-## Defaults
-# bids_root = '/fast/OPEN/NIH_stringaris'
-# deriv_root = op.join(bids_root, 'derivatives', PROJECT)
-# subjects_dir = op.join(bids_root, 'derivatives', 'freesurfer', 'subjects')
 
-
+## May want to use the technique below - so that it doesnt need to be called twice
 # bids_paths = find_matching_paths(deriv_root, tasks=task_id, extensions='.fif')
 # bids_paths += find_matching_paths(deriv_root, tasks=task_id, extensions='.hdf5')
-
 
 def is_present(data_list):
     for dataset in data_list:
@@ -30,14 +24,6 @@ def is_present(data_list):
         else:
             print(f'{dataset} missing')
     
-# def dict_fromVarlist(varlist):
-#     outdict = {}
-#     for varval in varlist:
-#         varname = [ i for i, j in locals().items() if j == varval][1]
-#         outdict[varname]=varval
-#     return outdict
-        
-
 # =============================================================================
 # Freesurfer Files
 # =============================================================================
@@ -145,6 +131,22 @@ def get_enigma_outputs(subject, bids_root):
 
     
 def status_expected_files(subject, bids_root):
+    '''
+    Returns a compiled dictionary with expected outputs
+
+    Parameters
+    ----------
+    subject : str
+        BIDS subject ID.
+    bids_root : path
+        BIDS top level directory
+
+    Returns
+    -------
+    final : dict
+        Compiled dictionary across freesurfer and project.
+
+    '''
     fs_dict = get_fs_filedict(subject, bids_root)
     en_dict = get_enigma_outputs(subject, bids_root)
     
