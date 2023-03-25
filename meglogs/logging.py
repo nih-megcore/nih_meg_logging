@@ -6,7 +6,26 @@ Created on Fri Mar 24 16:10:55 2023
 @author: jstout
 """
 import logging
-import os 
+import os
+from meglogs import LOG_DELIM
+
+
+# =============================================================================
+# Make a function to identify the best place for the logfile 
+# if bids - bids_root/logfile
+# if non-bids  ./logfile
+# =============================================================================
+
+
+#Decorator for functions
+def logger(function):
+    def wrapper(*args, **kwargs):
+        logger.info(f"{function.__name__}{LOG_DELIM}::START")
+        output = function(*args, **kwargs)
+        logger.info(f"{function.__name__}{LOG_DELIM}::COMPLETED")
+        return output
+    return wrapper
+
 
 
 
