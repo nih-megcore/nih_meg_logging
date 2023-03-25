@@ -9,7 +9,9 @@ Created on Sat Mar 25 10:54:02 2023
 import mne_bids
 from mne_bids import BIDSPath, find_matching_paths
 import os, os.path as op
+import glob
 import copy
+import pandas as pd
 
 PROJECT = 'ENIGMA_MEG'
 
@@ -154,18 +156,48 @@ def status_expected_files(subject, bids_root):
     final.update( en_dict )
     return final
 
+def main(subjects, bids_root):
+    # Set the dataframe columns
+    tmp_ = status_expected_files(subjects[0], bids_root)
+    find_columns = list(tmp_.keys())
+    dframe = pd.DataFrame(columns=['subject']+ find_columns)
+    
+    for subject in subjects:
+        tmp_ = status_expected_files(subject, bids_root)
+        current_loc = len(dframe)
+        
+        dframe.loc[current_loc, 'subject'] = subject
+        dframe.loc[current_loc, find_columns] = [tmp_[key] for key in find_columns]
+    return dframe
+    
+
 if __name__=='__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-subject')
     parser.add_argument('-bids_root')
+    parser.add_argument('-compile_project',
+                        action='store_true',
+                        help='Runs over all subjects and compiles dataframe')
+    parser.add_argument('-output_fname',
+                        help='CSV file output',
+                        default=f'./compiled_{PROJECT}_outputs.csv'
+                        )
     args = parser.parse_args()
-    
-    subject = args.subject
     bids_root = args.bids_root
     
-    final = status_expected_files(subject, bids_root)
-    print(final)
+    if not args.compile_project:
+        subjects = [args.subject]
+    else:
+        subjects = glob.glob(op.join(bids_root, 'sub-*'))
+        #Strip the path and sub- prefix 
+        subjects = [op.basename(i)[4:] for i in subjects]
+    
+    final = main(subjects, bids_root)        
+    if len(subjects)==1:
+        print(final)
+    else:
+        final.to_csv(args.output_fname)
 
 
 
