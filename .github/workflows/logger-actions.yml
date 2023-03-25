@@ -1,10 +1,10 @@
-name: nih2mne-tests
+name: meglogger-tests
 on: [push]
 jobs:
   pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: apt-get install pip 
+      - run: sudo apt-get install pip 
       - run: pip install pytest
       - run: pytest -vv
